@@ -162,6 +162,9 @@ export class Renderer {
       // This should only occur when the page is about:blank. See
       // https://github.com/GoogleChrome/puppeteer/blob/v1.5.0/docs/api.md#pagegotourl-options.
       await page.close();
+      if (this.config.closeBrowser) {
+        await this.browser.close();
+      }
       return { status: 400, customHeaders: new Map(), content: '' };
     }
 
@@ -169,6 +172,9 @@ export class Renderer {
     // https://cloud.google.com/compute/docs/storing-retrieving-metadata.
     if (response.headers()['metadata-flavor'] === 'Google') {
       await page.close();
+      if (this.config.closeBrowser) {
+        await this.browser.close();
+      }
       return { status: 403, customHeaders: new Map(), content: '' };
     }
 
@@ -225,6 +231,9 @@ export class Renderer {
     const result = (await page.content()) as string;
 
     await page.close();
+    if (this.config.closeBrowser) {
+      await this.browser.close();
+    }
     return {
       status: statusCode,
       customHeaders: customHeaders
@@ -283,6 +292,9 @@ export class Renderer {
 
     if (!response) {
       await page.close();
+      if (this.config.closeBrowser) {
+        await this.browser.close();
+      }
       throw new ScreenshotError('NoResponse');
     }
 
@@ -290,6 +302,9 @@ export class Renderer {
     // https://cloud.google.com/compute/docs/storing-retrieving-metadata.
     if (response.headers()['metadata-flavor'] === 'Google') {
       await page.close();
+      if (this.config.closeBrowser) {
+        await this.browser.close();
+      }
       throw new ScreenshotError('Forbidden');
     }
 
@@ -302,6 +317,9 @@ export class Renderer {
     // https://github.com/GoogleChrome/puppeteer/blob/v1.8.0/docs/api.md#pagescreenshotoptions
     const buffer = (await page.screenshot(screenshotOptions)) as Buffer;
     await page.close();
+    if (this.config.closeBrowser) {
+      await this.browser.close();
+    }
     return buffer;
   }
 }
