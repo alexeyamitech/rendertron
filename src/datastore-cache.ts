@@ -24,6 +24,7 @@ import { Config, ConfigManager } from './config';
 
 import { Datastore } from '@google-cloud/datastore';
 import { entity } from '@google-cloud/datastore/build/src/entity';
+import {OutgoingHttpHeaders} from "http";
 
 type CacheContent = {
   saved: Date;
@@ -57,7 +58,7 @@ export class DatastoreCache {
   async cacheContent(
     // eslint-disable-next-line @typescript-eslint/ban-types
     key: object,
-    headers: Record<string, string>,
+    headers: OutgoingHttpHeaders,
     payload: Buffer
   ) {
     const now = new Date();
@@ -182,7 +183,7 @@ export class DatastoreCache {
       await next();
 
       if (ctx.status === 200) {
-        cacheContent(key, ctx.response.headers, ctx.body);
+        cacheContent(key, ctx.response.headers, <Buffer>ctx.body);
       }
     }.bind(this);
   }

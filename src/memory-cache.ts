@@ -21,6 +21,7 @@
 
 import Koa from 'koa';
 import { Config, ConfigManager } from './config';
+import {OutgoingHttpHeaders} from "http";
 
 type CacheEntry = {
   saved: Date;
@@ -40,7 +41,7 @@ export class MemoryCache {
 
   cacheContent(
     key: string,
-    headers: { [key: string]: string },
+    headers: OutgoingHttpHeaders,
     payload: Buffer
   ) {
     // if the cache gets too big, we evict the least recently used entry (i.e. the first value in the map)
@@ -154,7 +155,7 @@ export class MemoryCache {
     await next();
 
     if (ctx.status === 200) {
-      this.cacheContent(cacheKey, ctx.response.headers, ctx.body);
+      this.cacheContent(cacheKey, ctx.response.headers, <Buffer>ctx.body);
     }
   }
 

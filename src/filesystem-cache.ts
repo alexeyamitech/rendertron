@@ -261,7 +261,7 @@ export class FilesystemCache {
               typeof payload === 'object' &&
               payload.type === 'Buffer'
             ) {
-              ctx.body = Buffer.from(payload);
+              ctx.body = Buffer.from(JSON.stringify(payload));
             } else {
               ctx.body = payload;
             }
