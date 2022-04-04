@@ -158,20 +158,27 @@ export class FilesystemCache {
         if (!payload) {
           return null;
         }
-        const fd = fs.openSync(path.join(this.getDir(''), key + '.json'), 'r');
-        const stats = fs.fstatSync(fd);
-        // use modification time as the saved time
-        const saved = stats.mtime;
-        const expires = new Date(
-          saved.getTime() +
-          parseInt(this.cacheConfig.cacheDurationMinutes) * 60 * 1000
-        );
-        return {
-          saved,
-          expires,
-          payload,
-          response,
-        };
+        let fd = -1;
+        try {
+          fd = fs.openSync(path.join(this.getDir(''), key + '.json'), 'r');
+          const stats = fs.fstatSync(fd);
+          // use modification time as the saved time
+          const saved = stats.mtime;
+          const expires = new Date(
+              saved.getTime() +
+              parseInt(this.cacheConfig.cacheDurationMinutes) * 60 * 1000
+          );
+          return {
+            saved,
+            expires,
+            payload,
+            response,
+          };
+        } finally {
+          if (fd != -1) {
+            fs.closeSync(fd)
+          }
+        }
       } catch (err) {
         return null;
       }
